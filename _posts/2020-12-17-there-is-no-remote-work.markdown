@@ -12,9 +12,9 @@ L'année 2020 et la pandémie ont rendu obligatoire de rester chez soi, pour viv
 Le travail que vous faites s'effectue là où vous pouvez le faire. Que ce soit chez vous, sur le site de l'entreprise ou celui de vos clients, selon vos obligations. Cette terminologie n'a d'intérêt que pour ceux qui souhaitent en conserver le caractère exceptionnel et non laisser libre les individus qui ne sont pas dans l'obligation de se déplacer pour réaliser leur quotidien. 
 
 
-Les raisons qui ont poussé des millions de gens à se déplacer régulièrement pour aller travailler sont de moins en moins valable. Beaucoup de tâches bureautique peuvent aujourd'hui se faire de manière sécurisée derrière un VPN via internet. Demain, des tâches locales pourront être commandé depuis n'importe où dans le monde en mettant en oeuvre des robots et des machines télécommandées. 
+Les raisons qui ont poussé des millions de gens à se déplacer régulièrement pour aller travailler sont de moins en moins valable. Beaucoup de tâches bureautique peuvent aujourd'hui se faire de manière sécurisée derrière un VPN via internet. Demain, des tâches qui nécessitent une présence locale pourront être commandées depuis n'importe où dans le monde en mettant en oeuvre des robots ou des machines télécommandées. 
 
-Les relations sociales sont depuis longtemps redistribuées au travers de canaux de communication comme le téléphone, la visio-conférence et les échanges plus asynchrone comme les mails où les chats. 
+Les relations sociales, indispensable à la collaboration et l'efficacité d'une entreprise, sont depuis longtemps redistribuées au travers de canaux de communication comme le téléphone, la visio-conférence et les échanges plus asynchrone comme les mails où les chats. 
 
 Même si évidemment, pour une large partie de la population dont je fais partie, il est plus intéressant et sympathique de se retrouver dans des lieux où il est possible d'échanger, de manger, de boire et de travailler ensemble, l'obligation fondamentale de se retrouver dans des lieux communs ne tiens plus. Seul subsiste les échos de l'exception que représentait le télétravail au passé et qui continue à subsister dans l'esprit d'une partie de la population qui n'ont pas encore accepté ce changement dans la manière dont nous pouvons aborder notre travail. 
 
