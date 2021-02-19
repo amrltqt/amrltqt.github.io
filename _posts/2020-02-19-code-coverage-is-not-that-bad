@@ -1,0 +1,21 @@
+---
+layout: post
+title: "Le code coverage c'est pas si mal"
+date: 2021-02-19 16:33:35 +0100
+---
+
+Le sentiment de travailler avec un code de qualité, c'est un peu comme les goûts et les couleurs, même si on apprécie grosso-modo tous la même chose il y a quand même des nuances qui nous rendent irréconciliables. 
+Pour moi, le coverage c'est une métrique qui mérite un débat infernal et interminable tellement elle est controversée. Je pense que d'un jour sur l'autre je n'ai pas le même avis sur la question.
+
+En bon développeur, à la question *Qu'est-ce que tu penses du code coverage* je fais comme tout le monde, je répond: "C'est bien le coverage, mais faut nuancer m'voyez". Le genre de trucs qu'on se dit à la machine à café pour être sûr de ne froisser personne.
+Alors autant écrire ici ce que j'en pense, histoire d'en garder une trace amusante pour la postérité. 
+
+Le code coverage n'exprime pas la qualité du code, il détermine la couverture des tests unitaires sur un scope donné. En gros si tu as un git par exemple, avec du code python et que tu joues un pytest-cov une analyse de couverture tirera partie de la configuration pytest du projet pour faire le gap entre ce qui est testé par pytest et le total du code de vos modules python. 
+Exit les scripts qui accompagne parfois le code, exit la configuration et autre IaaC. En gros la couverture de code ne couvre que ce que votre framework de test voit. Autant assumer tout de suite que c'est un gruyère!
+
+Si ensuite on part du principe qu'une fonction est couverte si elle est parcourue une fois (au travers de toutes ses structures de language) alors on peut aussi remettre en question l'exhaustivité de la couverture.
+Bref le bilan est pas folichon et ceux qui crient très justement à l'imposture sont pour moi dans leur bon droit.
+
+Néanmoins, en rester là serait aussi stupide que de penser que le coverage est une métrique idéale. Ce serait ignorer les bénéfices du jeu de rôle qu'il propose. Pourquoi ne pas voir le coverage comme simplement une opportunité d'amélioration?
+Considérons une base de code vérolée avec pas de tests, du code mort et autres horreurs. Imaginez que vous souhaitez corriger ça par un intense refactoring, le blindage de fonctionnalité essentielle par du TU, etc. 
+Le coverage peut être un bon moyen de mesurer la reprise en main du code et de vérifier que la couverture de teste reste stable. Finalement rien de transcendant mais faute de mieux pourquoi s'en passer? 
