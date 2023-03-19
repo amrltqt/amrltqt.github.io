@@ -7,7 +7,7 @@ Today, I want to share my thoughts on GPT-3 and how it's going to change the way
 
 What's truly remarkable about GPT-3 is its ability to understand natural language. This means that machines and software can now interpret human language and respond accordingly. But that's just the tip of the iceberg. When we combine GPT-3's natural language processing with summarization and postprocessing, we can create a very interesting workflow that I call NLMC.
 
-NLMC, or Natural Language Machine Control, describe the process to manipulate traditionnal software interfaces with Natural Language. With NLMC, we can build systems that can understand our commands and react by reusing APIs or classical automations.
+NLMC, or Natural Language Machine Control, describe the process to manipulate traditionnal software interfaces with Natural Language. NLMC is a specialized approach of the NLP that aims to optimize Human / Machine interface thanks to language. With NLMC, we can build systems that can understand our commands and react by reusing APIs or classical automations.
 
 Imagine that you can control your entire home automation system with just your voice or a messaging systeù. You could turn on the lights, adjust the temperature, and even start your coffee maker without lifting a finger.
 
