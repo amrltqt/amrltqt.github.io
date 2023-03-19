@@ -27,6 +27,6 @@ Example:
 
 To me it's not just about home automation. NLMC approach can automate tedious tasks like filling very long forms, freeing up our time by avoiding learning new interfaces and new systems or dealing with imperfect knowledge of a system.
 
-To conclude, LLMs are a real game-changer. Its ability to understand natural language is paving the way for very efficient NLMC, which could totally change the way we interact with machines.
+LLMs are a real game-changer. Their ability to understand natural language is paving the way for very efficient NLMC, which could totally change the way we interact with machines.
 
 Future applications are going to be awesome, let's see in few month how fun it would be!
