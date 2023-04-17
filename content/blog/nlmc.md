@@ -1,5 +1,5 @@
 +++
-title = "NLMC - Speak to your APIs" 
+title = "NLMC - Speak to your APIs"
 date = "2023-03-08"
 +++
 

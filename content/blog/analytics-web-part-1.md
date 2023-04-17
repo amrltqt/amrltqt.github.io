@@ -1,25 +1,26 @@
-+++ 
-title = "Vizu Project - Part 1" 
++++
+title = "Vizu Project - Part 1"
 date = "2023-04-16"
 +++
 
-First day of experimenting around loading data, building charts and connected data viz. 
-Very good sensation, interesting results. 
+First day of experimenting around loading data, building charts and connected data viz.
+Very good sensation, interesting results.
 
-Let's elaborate on how to simplify data exposition on your frontend application. 
+Let's elaborate on how to simplify data exposition on your frontend application.
 
 1. I want a static blob of data that I can expose through any S3 compatible storage.
-2. Integrated schema to simplify data exploration on the frontend. 
-3. Memory / reading efficient 
+2. Integrated schema to simplify data exploration on the frontend.
+3. Memory / reading efficient
 
-The very good candidate for that is to use an arrow IPC file. This are some risks with this solution. Arrow IPC by nature is not a storage medium, parquet would be a prefered medium. Why? Just because IPC do not enforce compatibility and is meant to be use between two process of a same software. 
-As I aims to load data in the morning, and expose it only for the current day I do not assume too much risks. 
+The very good candidate for that is to use an arrow IPC file. This are some risks with this solution. Arrow IPC by nature is not a storage medium, parquet would be a prefered medium. Why? Just because IPC do not enforce compatibility and is meant to be use between two process of a same software.
+As I aims to load data in the morning, and expose it only for the current day I do not assume too much risks.
 
 ## Build the file
 
-Let's build an IPC file with python, pandas, pyarrow. 
+Let's build an IPC file with python, pandas, pyarrow.
 
-I'm working in python 3.11 with the following dependencies 
+I'm working in python 3.11 with the following dependencies
+
 ```requirements.txt
 pandas
 faker
@@ -31,7 +32,7 @@ Here is the script I use to generate an IPC example file.
 ```python
 import pandas
 import numpy
-import pyarrow 
+import pyarrow
 import datetime
 
 from faker import Faker
@@ -74,21 +75,21 @@ def export(df, to):
 export(df, './vite-project/public/raw.arrow')
 ```
 
-Note: 
+Note:
 
-1. I cast the types after the dataframe creation to secure a correct translation on the Js side afteward. 
+1. I cast the types after the dataframe creation to secure a correct translation on the Js side afteward.
 2. The export tasks is straightforward thanks to the clean integration of pyarrow / pandas
 
 It's easy to imagine that this process is started by airflow after refreshing data in your Snowflake instance for instance.
 
 ## Access data in Front end
 
-The previous task assume that you created a vite application with react. 
+The previous task assume that you created a vite application with react.
 Check https://vitejs.dev/guide/ to do the same.
 
-In the vite project you usually have public folder for static assets like images, fonts. Let's add the arrow files generated there. In production it means that we publish the IPC to the CDN, the Nginx or whatever you're using to expose static files. 
+In the vite project you usually have public folder for static assets like images, fonts. Let's add the arrow files generated there. In production it means that we publish the IPC to the CDN, the Nginx or whatever you're using to expose static files.
 
-The code to load the IPC file is straightforward. 
+The code to load the IPC file is straightforward.
 
 ```shell
 npm i apache-arrow
@@ -135,21 +136,20 @@ This hook load the data from the `target` IPC file and create a arrow table.
 To simplify reuse of the data I choose to iterate over values to create an array of object that contains each "rows" of data.
 
 To use this code you can call useData in your component like this:
+
 ```js
 export default function App() {
   const { table, fields } = useData("raw.arrow");
-  
+
   if (!table || !fields) {
     return <div>Loading..</div>;
-  } 
+  }
 
   console.log(fields);
   console.table(table);
-  
+
   return null;
 }
 ```
 
-Let's see how to build on a dashboard for another part. 
-  
-
+Let's see how to build on a dashboard for another part.
