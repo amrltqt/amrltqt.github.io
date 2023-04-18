@@ -1,6 +1,6 @@
 +++
 title = "Rust - Object store for newbies"
-date = "2022-11-11"
+date = 2022-11-11
 +++
 
 The [object_store][1] package is a convenient way to adress common cloud object stores.

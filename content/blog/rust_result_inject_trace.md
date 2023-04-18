@@ -1,12 +1,11 @@
 +++
-title = "Rust - Inject a trace" 
-date = "2022-11-14"
+title = "Rust - Inject a trace"
+date = 2022-11-14
 +++
 
-
 Hard day at work, sad that days have only 24h. I want to write about a small trick inspired by javascript promise based on [`and_then`][1].
-I recently faced an issue with an wrapper function around sqlx where I want to inject at the level of this function. 
-But to frankly speaking, this was that kind of single expression function that makes rust so enjoyable (scala's fellows will know). 
+I recently faced an issue with an wrapper function around sqlx where I want to inject at the level of this function.
+But to frankly speaking, this was that kind of single expression function that makes rust so enjoyable (scala's fellows will know).
 
 Let's make an example. Imagine that the `check` function is out of my crate / package (I recently understood the diff between a crate and a packages, check [here][2] for more information).
 
@@ -15,7 +14,7 @@ fn check(number: i32) -> Result<i32, &'static str> {
     if number == 7 {
         return Err("bouhh")
     }
-    
+
     Ok(number)
 }
 
@@ -25,7 +24,7 @@ fn handle_check(number: i32) -> Result<i32, &'static str> {
 }
 ```
 
-I have this wrapper function called handle_check that makes some glue on top of the check function. 
+I have this wrapper function called handle_check that makes some glue on top of the check function.
 Imagine a bit more conf plus that the check function is a big builder that you consume in an upper function.
 
 ```rust
@@ -51,8 +50,8 @@ fn handle_check(number: i32) -> Result<i32, &'static str> {
 }
 ```
 
-A much cleaner way is again to use Result operators. They're most of use a brilliant way to express simple things simply. 
-Here [`and_then`][1] or [`or_else`] make it explicit about the actions you perform in case the result is Ok or Err without loosing concision.  
+A much cleaner way is again to use Result operators. They're most of use a brilliant way to express simple things simply.
+Here [`and_then`][1] or [`or_else`] make it explicit about the actions you perform in case the result is Ok or Err without loosing concision.
 
 ```rust
 fn handle_check(number: i32) -> Result<i32, &'static str> {
@@ -68,11 +67,10 @@ fn handle_check(number: i32) -> Result<i32, &'static str> {
 }
 ```
 
-This is not optimal, we usually want to unwrap the error / result at the good moment to avoid extra consumption. 
+This is not optimal, we usually want to unwrap the error / result at the good moment to avoid extra consumption.
 But for tracability, it's really interesting to have the information at the good level.
 
 See you!
-
 
 [1]: https://doc.rust-lang.org/std/result/enum.Result.html#method.and_then
 [2]: https://doc.rust-lang.org/book/ch07-01-packages-and-crates.html#:~:text=The%20crate%20root%20is%20a,A%20package%20contains%20a%20Cargo.

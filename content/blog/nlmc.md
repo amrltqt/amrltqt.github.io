@@ -1,6 +1,6 @@
 +++
 title = "NLMC - Speak to your APIs"
-date = "2023-03-08"
+date = 2023-03-08
 +++
 
 Today, I want to share my thoughts on GPT-3 and how it's going to change the way we interact with software or machines. GPT-3 has been publicly deployed for a few months now, and it's already making waves in the tech industry and beyond.

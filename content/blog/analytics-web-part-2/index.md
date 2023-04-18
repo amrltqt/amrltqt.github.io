@@ -1,6 +1,6 @@
 +++
 title = "Analytics on the web stack - Part 2"
-date = "2023-04-18"
+date = 2023-04-18
 +++
 
 Ok, I need to admit that building a dashboard on using simply the current web stack request a bit more development than what I though at the beginning.

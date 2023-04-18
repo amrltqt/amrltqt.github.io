@@ -1,6 +1,6 @@
 +++
 title = "Error converter in rust"
-date = "2022-11-13"
+date = 2022-11-13
 +++
 
 Do you remember three tier architecture? Between logic tier and data tiers in your application server code, you'll always find a bunch of code related to error management about databases issues. Most of the time you want to map the database issue with something that you can manage on your side.

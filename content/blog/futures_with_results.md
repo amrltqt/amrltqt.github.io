@@ -1,6 +1,6 @@
 +++
 title = "Futures with results"
-date = "2022-11-12"
+date = 2022-11-12
 +++
 
 Yesterday, I spent a lot of time trying to figure out how to manage a collection of results in an async context.

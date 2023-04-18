@@ -1,6 +1,6 @@
 +++
 title = "Analytics on the web stack - Part 1"
-date = "2023-04-16"
+date = 2023-04-16
 +++
 
 First day of experimenting around loading data, building charts and connected data viz.

@@ -1,6 +1,6 @@
 +++
 title = "Cargo add - Enjoy rust dependencies"
-date = "2023-03-12"
+date = 2023-03-12
 +++
 
 # What's this?

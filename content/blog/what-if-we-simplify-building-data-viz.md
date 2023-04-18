@@ -1,6 +1,6 @@
 +++
 title = "What if we simplify Data Viz with React"
-date = "2023-04-15"
+date = 2023-04-15
 +++
 
 Since I'm working in data analytics industry i'm impressed by the ability of few tools to completely capture the data vizualisation market. PowerBI, Qlik, Tableau and few other old tools are completely eating the cake.

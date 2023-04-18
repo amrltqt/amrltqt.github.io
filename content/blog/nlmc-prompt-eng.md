@@ -1,6 +1,6 @@
 +++
 title = "NLMC - a simple practical use case"
-date = "2023-03-08"
+date = 2023-03-08
 +++
 
 In this post, we'll explore how to use Large Language Models (LLMs) to build a Natural Language, Machine Control (NLMC) process, enhancing user experience in software applications. LLMs enable software to better understand human language, and when combined with effective summarization, they can help create natural language interfaces for today's APIs.
