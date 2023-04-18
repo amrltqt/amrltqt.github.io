@@ -1,5 +1,5 @@
 +++
-title = "Vizu Project - Part 1"
+title = "Analytics on the web stack - Part 1"
 date = "2023-04-16"
 +++
 
