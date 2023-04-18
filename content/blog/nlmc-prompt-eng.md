@@ -1,5 +1,5 @@
 +++
-title = "NLMC - a simple practical use case" 
+title = "NLMC - a simple practical use case"
 date = "2023-03-08"
 +++
 
