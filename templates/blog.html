@@ -1,6 +1,6 @@
 {% extends "page.html" %} 
 {% block main %}
-<h1 class="title">{{ section.title }}</h1>
+<h1 class="text-lg font-medium text-slate-500">{{ section.title }}</h1>
 <ul>
   <!-- If you are using pagination, section.pages will be empty. You need to use the paginator object -->
   {% for page in section.pages %}
