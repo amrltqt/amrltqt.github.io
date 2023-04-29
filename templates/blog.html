@@ -1,9 +1,21 @@
-{% extends "page.html" %} {% block content %}
-<h1 class="title">{{ section.title }}</h1>
-<ul>
-  <!-- If you are using pagination, section.pages will be empty. You need to use the paginator object -->
-  {% for page in section.pages %}
-  <li><a href="{{ page.permalink | safe }}">{{ page.title }}</a></li>
-  {% endfor %}
-</ul>
-{% endblock content %}
+{% extends "page.html" %} 
+{% block main %}
+  <div class="mx-auto max-w-lg px-4 py-12 sm:px-6 md:py-16">
+    <div class="px-4 sm:px-0 mb-2 text-center">
+      <h1 class="text-lg font-bold leading-7 pb-2">{{ section.title }}</h1>
+    </div>
+    <ul role="list">
+      <!-- If you are using pagination, section.pages will be empty. You need to use the paginator object -->
+      {% for page in section.pages %}
+      <a href="{{ page.permalink | safe }}" class="flex gap-x-4 mb-2 rounded-lg bg-white px-3 py-2 shadow focus-within:ring-2 hover:shadow-orange-200">
+          <div class="min-w-0">
+            <p class="text-orange-700 font-semibold leading-6 text-gray-900">
+              {{ page.title }}
+            </p>
+            <p class="truncate text-xs leading-5 text-gray-500">Published on {{ page.date }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock main %}
