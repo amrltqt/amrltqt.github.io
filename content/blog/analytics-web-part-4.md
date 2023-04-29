@@ -18,7 +18,7 @@ Layout managers leverage the children reserved word to distribute the children c
 
 Let's have a look of the `FlexRowLayout` component that help to align correctly components in a row whatever your screen size.
 
-```jsx
+```javascript
 export function FlexRowLayout({ children }) {
   return (
     <div className="flex space-x-2">
@@ -38,7 +38,7 @@ The space-x-2 is really cool, it secure that all spaces will be 2. By reusing th
 
 The same strategy apply well for a column oriented layout.
 
-```jsx
+```javascript
 export function FlexColLayout({ children }) {
   return (
     <div className="flex flex-col space-y-2">
@@ -52,7 +52,7 @@ export function FlexColLayout({ children }) {
 
 Using it simplify the flow of your application. All the children the FlexRowLayout will be in the row, well spaced and you don't care anymore about flex stuff.
 
-```jsx
+```javascript
 export default function App() {
   return (
     <main>
@@ -75,7 +75,7 @@ If you create a container to provide a standard visual experience on all your co
 
 Let's build a Card as a container.
 
-```jsx
+```javascript
 export function Card({ children }) {
   return (
     <div className="bg-white p-2 rounded shadow ring-gray-300">{children}</div>
@@ -85,7 +85,7 @@ export function Card({ children }) {
 
 Again the use of the children props give us power.
 
-```jsx
+```javascript
 export default function App() {
   return (
     <main>
@@ -110,7 +110,7 @@ And that's _exactly_ what we want when we build a dashboard that focus on sharin
 
 In the end you application root will combine layout, containers and the configured widgets in a simple tree of components.
 
-```jsx
+```javascript
 export default function App() {
   return (
     <FlexColLayout>
