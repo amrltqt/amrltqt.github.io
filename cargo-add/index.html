@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+      
+
+      <title></title>
+
+      
+          <script src="https://cdn.tailwindcss.com?plugins=typography,aspect-ratio,line-clamp"></script>
+          <link rel="stylesheet" href="https://amrltqt.github.io/theme.css">
+      
+      
+  </head>
+  <body>
+  
+    <header>
+      <nav class="bg-white shadow">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-16 justify-between">
+            <div class="flex">
+              <div class="flex flex-shrink-0 items-center">
+                <a href="https:&#x2F;&#x2F;amrltqt.github.io" title="AMRLQT blog" class="text-xl font-medium">AMRLQT </a>
+              </div>
+            </div>
+            <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                <a itemprop="url" href="https://github.com/amrltqt">
+                  <img id="avatar" src="https://amrltqt.github.io/avatar.jpg" title="https://github.com/amrltqt" />
+                </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    
+    <main class="container mx-auto">
+      
+<div class="container mx-auto lg:px-40">
+    <div class="flex items-center justify-between gap-x-6 py-3 border-b border-red-900">
+        <div class="min-w-0">
+            <h1 class="text-2xl font-semibold leading-7 text-red-900 pb-1">Cargo add - Enjoy rust dependencies</h1>
+        </div>
+        <div class="flex flex-none items-center gap-x-4">
+            <p class="text-sm text-slate-500">2023-03-12</p>
+        </div>
+    </div>
+    <div id='content' class="mt-4">
+        <h1 id="what-s-this">What's this?</h1>
+<p>Yesterday i discovered the add feature of cargo. Before using it, I was just modifying my Cargo.toml manually by looking at the right version to use in <a href="https://crates.io/">crates.io</a>.</p>
+<p><code>cargo add</code> behaves similarly to npm or pip, respectively for Node.js and Python, but it's even simpler. It doesn't install any libraries by itself; instead, it helps you declare your dependencies in the Cargo.toml file.</p>
+<p>With <code>cargo add</code>, you can add, update, or require a new feature with a single command line, and let cargo resolve the dependencies' constraints for you.</p>
+<p>Let's create a test project to put our hands-on a practical situation.</p>
+<pre data-lang="shell" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-shell "><code class="language-shell" data-lang="shell"><span>$ cargo new test-cargo-add
+</span><span>$ cd test-cargo-add
+</span></code></pre>
+<h1 id="declare-dependencies">Declare dependencies</h1>
+<p>Suppose we want to create a small HTTP client for a CRON job, and we want to use reqwest and tokio as an asynchronous runtime. With <code>cargo add</code>, it's as simple as using the following command:</p>
+<pre data-lang="shell" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-shell "><code class="language-shell" data-lang="shell"><span>$ cargo add tokio
+</span><span>Updating crates.io index
+</span><span>Adding tokio v1.26.0 to dependencies.
+</span><span>        Features:
+</span><span>        - bytes
+</span><span>        - fs
+</span><span>        - full
+</span><span>        - io-std
+</span><span>        - io-util
+</span><span>        - libc
+</span><span>        - macros
+</span><span>        - memchr
+</span><span>        - mio
+</span><span>        - net
+</span><span>        - num_cpus
+</span><span>        - parking_lot
+</span><span>        - process
+</span><span>        - rt
+</span><span>        - rt-multi-thread
+</span><span>        - signal
+</span><span>        - signal-hook-registry
+</span><span>        - socket2
+</span><span>        - stats
+</span><span>        - sync
+</span><span>        - test-util
+</span><span>        - time
+</span><span>        - tokio-macros
+</span><span>        - tracing
+</span><span>        - windows-sys
+</span></code></pre>
+<p>The <code>cargo add</code> command will update the crates.io index and add the tokio library with version <code>1.26.0</code> to your dependencies. It also provides you with a list of the available features you can use with the library.</p>
+<p>The consequence of this command is that it will simply add the following line to the Cargo.toml:</p>
+<pre data-lang="toml" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#7f902a;">tokio </span><span>= </span><span style="color:#d07711;">&quot;1.26.0&quot;
+</span></code></pre>
+<p>If we want to include <code>reqwest</code> as a dependency, we can stack them up in one single command:</p>
+<pre data-lang="shell" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-shell "><code class="language-shell" data-lang="shell"><span>$ cargo add tokio reqwest
+</span></code></pre>
+<p>The <code>cargo add</code> command will add the reqwest dependency to the Cargo.toml file.</p>
+<pre data-lang="toml" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#7f902a;">reqwest </span><span>= </span><span style="color:#d07711;">&quot;0.11.14&quot;
+</span><span style="color:#7f902a;">tokio </span><span>= </span><span style="color:#d07711;">&quot;1.26.0&quot;
+</span></code></pre>
+<h1 id="add-features">Add features</h1>
+<p>The crates system includes a small, funny aspect called &quot;features&quot; that you can't avoid. Features are a way to enable some functionalities of the crates. They permit conditional compilation following your needs.</p>
+<p>For example, we want to have the <code>rt-multi-thread</code> feature in <code>tokio</code>. It's a convenient one when you build a simple network client. You can use the following command line to add it:</p>
+<pre data-lang="shell" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-shell "><code class="language-shell" data-lang="shell"><span>$ cargo add tokio --features rt-multi-thread
+</span></code></pre>
+<p>The consequence is the update of the <code>Cargo.toml</code> file again, with this time a clear definition of the requested features.</p>
+<pre data-lang="toml" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-toml "><code class="language-toml" data-lang="toml"><span style="color:#7f902a;">tokio </span><span>= { </span><span style="color:#7f902a;">version </span><span>= </span><span style="color:#d07711;">&quot;1.26.0&quot;</span><span>, </span><span style="color:#7f902a;">features </span><span>= [</span><span style="color:#d07711;">&quot;rt-multi-thread&quot;</span><span>] }
+</span></code></pre>
+<p>To add several features at once:</p>
+<pre data-lang="shell" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-shell "><code class="language-shell" data-lang="shell"><span>$ cargo add tokio --features rt-multi-thread,fs
+</span></code></pre>
+<p>If you add new features, it will update the features list accordingly.</p>
+<p>The command line to add several dependencies with different features is the following.</p>
+<pre data-lang="shell" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-shell "><code class="language-shell" data-lang="shell"><span>$ cargo add tokio reqwest --features tokio/rt-multi-thread,reqwest/json
+</span><span># or
+</span><span>$ cargo add tokio --features tokio/rt-multi-thread reqwest --features reqwest/json
+</span></code></pre>
+<p>Note this time the need to identify the dependencies with the <code>&lt;dependencies&gt;/&lt;feature&gt;</code> pattern.</p>
+<p>The full documentation of the cargo add is <a href="https://doc.rust-lang.org/cargo/commands/cargo-add.html">here</a></p>
+
+    </div>
+</div>
+
+    </main>
+    
+    <footer class="border-t border-gray-900/10 pt-4 sm:mt-20 lg:mt-24">
+      
+      <div class="mx-auto max-w-7xl px-6 pb-4 lg:px-8">
+      <div class="text-sm leading-5 text-gray-500">
+        <div class=""></div>
+        <div class="">
+          <small class="">
+            Copyright &copy; Amrltqt
+          </small>
+          <small class="">
+            Powered by <a href="https://www.getzola.org" target="_blank" noreferrer>Zola</a> 
+          </small>
+        </div>
+      </div>
+      </div>
+      
+    </footer>
+  
+  </body>
+</html>

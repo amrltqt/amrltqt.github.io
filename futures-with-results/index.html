@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+      
+
+      <title></title>
+
+      
+          <script src="https://cdn.tailwindcss.com?plugins=typography,aspect-ratio,line-clamp"></script>
+          <link rel="stylesheet" href="https://amrltqt.github.io/theme.css">
+      
+      
+  </head>
+  <body>
+  
+    <header>
+      <nav class="bg-white shadow">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-16 justify-between">
+            <div class="flex">
+              <div class="flex flex-shrink-0 items-center">
+                <a href="https:&#x2F;&#x2F;amrltqt.github.io" title="AMRLQT blog" class="text-xl font-medium">AMRLQT </a>
+              </div>
+            </div>
+            <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                <a itemprop="url" href="https://github.com/amrltqt">
+                  <img id="avatar" src="https://amrltqt.github.io/avatar.jpg" title="https://github.com/amrltqt" />
+                </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    
+    <main class="container mx-auto">
+      
+<div class="container mx-auto lg:px-40">
+    <div class="flex items-center justify-between gap-x-6 py-3 border-b border-red-900">
+        <div class="min-w-0">
+            <h1 class="text-2xl font-semibold leading-7 text-red-900 pb-1">Futures with results</h1>
+        </div>
+        <div class="flex flex-none items-center gap-x-4">
+            <p class="text-sm text-slate-500">2022-11-12</p>
+        </div>
+    </div>
+    <div id='content' class="mt-4">
+        <p>Yesterday, I spent a lot of time trying to figure out how to manage a collection of results in an async context.</p>
+<p>By a collection of results I mean that I have several operation to perform and I want to be aware of the completion of each of them.</p>
+<h2 id="the-basics">The basics</h2>
+<p>To solve that, it's worth taking a step back and analyse how it works in a synchronized context.</p>
+<p>Let's say that I have a function that, given a number return a result with the same number or an error.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">fn </span><span style="color:#c23f31;">check</span><span>(</span><span style="color:#5597d6;">number</span><span>: </span><span style="color:#668f14;">i32</span><span>) -&gt; </span><span style="color:#a2a001;">Result</span><span>&lt;</span><span style="color:#668f14;">i32</span><span>, </span><span style="color:#72ab00;">&amp;</span><span style="color:#668f14;">&#39;static str</span><span>&gt; {
+</span><span>    </span><span style="color:#72ab00;">if</span><span> number </span><span style="color:#72ab00;">== </span><span style="color:#b3933a;">7 </span><span>{
+</span><span>        </span><span style="color:#72ab00;">return </span><span style="color:#a2a001;">Err</span><span>(</span><span style="color:#d07711;">&quot;Bouhh, we do not accept 7!&quot;</span><span>);
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#a2a001;">Ok</span><span>(number)
+</span><span>}
+</span></code></pre>
+<p>What happen if I want to <code>check</code> over a range of values?</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">let</span><span> results: </span><span style="color:#a2a001;">Vec</span><span>&lt;</span><span style="color:#72ab00;">_</span><span>&gt; </span><span style="color:#72ab00;">= </span><span>(</span><span style="color:#b3933a;">1</span><span style="color:#72ab00;">..</span><span style="color:#b3933a;">10</span><span>).</span><span style="color:#b39f04;">map</span><span>(check).</span><span style="color:#b39f04;">collect</span><span>();
+</span></code></pre>
+<p><code>results</code> contains a list of results enum. To check over the completion it's worth iterating again and doing some <code>filter_map</code>, <code>partition</code> as described in <a href="https://doc.rust-lang.org/rust-by-example/error/iter_result.html">Rust by example</a>.</p>
+<h2 id="the-async-way-of-doing-it">The async way of doing it</h2>
+<p>When dealing in an async context, using a tokio runtime or a <a href="https://docs.rs/futures/latest/futures/executor/struct.ThreadPool.html">ThreadPool</a> things aren't that much different. Except that playing with an async context is a bit more &quot;abstract&quot; and that you have to control your async tasks behavior.</p>
+<p>For this example, I'm using the <a href="https://crates.io/crates/futures">futures</a> crates that bring everything we need to play with async.</p>
+<p>In your project, you have to declare dependencies like this. Crates version is the one available at the time of writing.</p>
+<pre data-lang="toml" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-toml "><code class="language-toml" data-lang="toml"><span>[</span><span style="color:#6486ab;">dependencies</span><span>]
+</span><span style="color:#7f902a;">futures </span><span>= { </span><span style="color:#7f902a;">version </span><span>= </span><span style="color:#d07711;">&quot;0.3.25&quot;</span><span>, </span><span style="color:#7f902a;">features </span><span>= [</span><span style="color:#d07711;">&quot;executor&quot;</span><span>, </span><span style="color:#d07711;">&quot;thread-pool&quot;</span><span>]}
+</span></code></pre>
+<p>Let's rebuild the check function for async and intialize a <a href="https://docs.rs/futures/latest/futures/executor/struct.ThreadPool.html">ThreadPool</a>.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#72ab00;">use </span><span>futures::{executor::ThreadPool;
+</span><span>
+</span><span>async </span><span style="color:#668f14;">fn </span><span style="color:#c23f31;">async_drain</span><span>(</span><span style="color:#5597d6;">number</span><span>: </span><span style="color:#668f14;">i32</span><span>) -&gt; </span><span style="color:#a2a001;">Result</span><span>&lt;</span><span style="color:#668f14;">i32</span><span>, </span><span style="color:#72ab00;">&amp;</span><span style="color:#668f14;">&#39;static str</span><span>&gt; {
+</span><span>    </span><span style="color:#72ab00;">if</span><span> number </span><span style="color:#72ab00;">== </span><span style="color:#b3933a;">7 </span><span>{
+</span><span>        </span><span style="color:#72ab00;">return </span><span style="color:#a2a001;">Err</span><span>(</span><span style="color:#d07711;">&quot;7 have been found, bouuh&quot;</span><span>);
+</span><span>    }
+</span><span>    </span><span style="color:#a2a001;">Ok</span><span>(number)
+</span><span>}
+</span><span>
+</span><span style="color:#668f14;">fn </span><span style="color:#c23f31;">main</span><span>() {
+</span><span>    </span><span style="color:#668f14;">let</span><span> pool </span><span style="color:#72ab00;">= </span><span>ThreadPool::new().</span><span style="color:#b39f04;">unwrap</span><span>();
+</span><span>}
+</span></code></pre>
+<p>Now we can do mostly the same thing, building an iterator that drain a Range
+and catch some Futures. I add the type of the Mapper to better see what's inside.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#7f8989;">// Map&lt;Range&lt;i32&gt;, |i32| -&gt; impl Future&lt;Output = Result&lt;i32, &amp;str&gt;&gt;&gt;
+</span><span style="color:#668f14;">let</span><span> tasks </span><span style="color:#72ab00;">= </span><span>(</span><span style="color:#b3933a;">1</span><span style="color:#72ab00;">..</span><span style="color:#b3933a;">10</span><span>).</span><span style="color:#b39f04;">map</span><span>(|</span><span style="color:#5597d6;">i</span><span>| </span><span style="color:#b39f04;">async_drain</span><span>(i));
+</span></code></pre>
+<p>The big difference is the manipulation that we do to create the future to await <em>all</em> the async tasks.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">let</span><span> future </span><span style="color:#72ab00;">= </span><span>futures::future::join_all(tasks);
+</span></code></pre>
+<p>Then to process it with the thread pool we can do the following.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">let</span><span> test </span><span style="color:#72ab00;">=</span><span> pool.</span><span style="color:#b39f04;">spawn_with_handle</span><span>(future).</span><span style="color:#b39f04;">unwrap</span><span>();
+</span><span style="color:#7f8989;">// res: Vec&lt;Result&lt;i32, &amp;str&gt;&gt;
+</span><span style="color:#668f14;">let</span><span> res </span><span style="color:#72ab00;">= </span><span style="color:#b39f04;">block_on</span><span>(test);
+</span><span>
+</span><span style="color:#72ab00;">for</span><span> r </span><span style="color:#72ab00;">in</span><span> res {
+</span><span>    </span><span style="color:#72ab00;">match</span><span> r {
+</span><span>        </span><span style="color:#a2a001;">Ok</span><span>(v) </span><span style="color:#72ab00;">=&gt; </span><span>{</span><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;</span><span style="color:#aeb52b;">{}</span><span style="color:#d07711;">&quot;</span><span>, v);},
+</span><span>        </span><span style="color:#a2a001;">Err</span><span>(err) </span><span style="color:#72ab00;">=&gt; </span><span>{</span><span style="color:#a2a001;">println!</span><span>(</span><span style="color:#d07711;">&quot;</span><span style="color:#aeb52b;">{}</span><span style="color:#d07711;">&quot;</span><span>, err)}
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p><code>spawn_with_handle</code> help to capture a result from the future, where <code>spawn</code> only capture a correct execution information.</p>
+<p><code>block_on</code> block the current thread until you get the resolve the future. It mostly simulate the <code>.await</code> in a more classic situation.</p>
+<p>I hope those examples help you to overcome this situation if you face it one day.</p>
+
+    </div>
+</div>
+
+    </main>
+    
+    <footer class="border-t border-gray-900/10 pt-4 sm:mt-20 lg:mt-24">
+      
+      <div class="mx-auto max-w-7xl px-6 pb-4 lg:px-8">
+      <div class="text-sm leading-5 text-gray-500">
+        <div class=""></div>
+        <div class="">
+          <small class="">
+            Copyright &copy; Amrltqt
+          </small>
+          <small class="">
+            Powered by <a href="https://www.getzola.org" target="_blank" noreferrer>Zola</a> 
+          </small>
+        </div>
+      </div>
+      </div>
+      
+    </footer>
+  
+  </body>
+</html>

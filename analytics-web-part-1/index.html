@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+      
+
+      <title></title>
+
+      
+          <script src="https://cdn.tailwindcss.com?plugins=typography,aspect-ratio,line-clamp"></script>
+          <link rel="stylesheet" href="https://amrltqt.github.io/theme.css">
+      
+      
+  </head>
+  <body>
+  
+    <header>
+      <nav class="bg-white shadow">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-16 justify-between">
+            <div class="flex">
+              <div class="flex flex-shrink-0 items-center">
+                <a href="https:&#x2F;&#x2F;amrltqt.github.io" title="AMRLQT blog" class="text-xl font-medium">AMRLQT </a>
+              </div>
+            </div>
+            <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                <a itemprop="url" href="https://github.com/amrltqt">
+                  <img id="avatar" src="https://amrltqt.github.io/avatar.jpg" title="https://github.com/amrltqt" />
+                </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    
+    <main class="container mx-auto">
+      
+<div class="container mx-auto lg:px-40">
+    <div class="flex items-center justify-between gap-x-6 py-3 border-b border-red-900">
+        <div class="min-w-0">
+            <h1 class="text-2xl font-semibold leading-7 text-red-900 pb-1">Analytics on the web stack - Part 1</h1>
+        </div>
+        <div class="flex flex-none items-center gap-x-4">
+            <p class="text-sm text-slate-500">2023-04-16</p>
+        </div>
+    </div>
+    <div id='content' class="mt-4">
+        <p>First day of experimenting around loading data, building charts and connected data viz.
+Very good sensation, interesting results.</p>
+<p>Let's elaborate on how to simplify data exposition on your frontend application.</p>
+<ol>
+<li>I want a static blob of data that I can expose through any S3 compatible storage.</li>
+<li>Integrated schema to simplify data exploration on the frontend.</li>
+<li>Memory / reading efficient</li>
+</ol>
+<p>The very good candidate for that is to use an arrow IPC file. This are some risks with this solution. Arrow IPC by nature is not a storage medium, parquet would be a prefered medium. Why? Just because IPC do not enforce compatibility and is meant to be use between two process of a same software.
+As I aims to load data in the morning, and expose it only for the current day I do not assume too much risks.</p>
+<h2 id="build-the-file">Build the file</h2>
+<p>Let's build an IPC file with python, pandas, pyarrow.</p>
+<p>I'm working in python 3.11 with the following dependencies</p>
+<pre data-lang="requirements.txt" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-requirements.txt "><code class="language-requirements.txt" data-lang="requirements.txt"><span>pandas
+</span><span>faker
+</span><span>pyarrow
+</span></code></pre>
+<p>Here is the script I use to generate an IPC example file.</p>
+<pre data-lang="python" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#72ab00;">import </span><span>pandas
+</span><span style="color:#72ab00;">import </span><span>numpy
+</span><span style="color:#72ab00;">import </span><span>pyarrow
+</span><span style="color:#72ab00;">import </span><span>datetime
+</span><span>
+</span><span style="color:#72ab00;">from </span><span>faker </span><span style="color:#72ab00;">import </span><span>Faker
+</span><span>
+</span><span>fake </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">Faker</span><span>()
+</span><span>Faker.</span><span style="color:#5597d6;">seed</span><span>(</span><span style="color:#b3933a;">5478</span><span>)
+</span><span>
+</span><span>countries </span><span style="color:#72ab00;">= </span><span>[
+</span><span>    fake.</span><span style="color:#5597d6;">country</span><span>()
+</span><span>    </span><span style="color:#72ab00;">for </span><span style="color:#5597d6;">_ </span><span style="color:#72ab00;">in </span><span style="color:#b39f04;">range</span><span>(</span><span style="color:#b3933a;">5</span><span>)
+</span><span>]
+</span><span>
+</span><span>data </span><span style="color:#72ab00;">= </span><span>[
+</span><span>    {
+</span><span>        </span><span style="color:#d07711;">&quot;id&quot;</span><span>: i,
+</span><span>        </span><span style="color:#d07711;">&quot;date&quot;</span><span>: datetime.</span><span style="color:#5597d6;">date</span><span>(</span><span style="color:#b3933a;">2023</span><span>, </span><span style="color:#b3933a;">1</span><span>, </span><span style="color:#b3933a;">1</span><span>) </span><span style="color:#72ab00;">+ </span><span>datetime.</span><span style="color:#5597d6;">timedelta</span><span>(</span><span style="color:#5597d6;">days</span><span style="color:#72ab00;">=</span><span>i),
+</span><span>        </span><span style="color:#d07711;">&quot;a&quot;</span><span>: fake.</span><span style="color:#5597d6;">pyint</span><span>(</span><span style="color:#5597d6;">max_value</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">200</span><span>),
+</span><span>        </span><span style="color:#d07711;">&quot;b&quot;</span><span>: fake.</span><span style="color:#5597d6;">pyint</span><span>(</span><span style="color:#5597d6;">max_value</span><span style="color:#72ab00;">=</span><span style="color:#b3933a;">200</span><span>),
+</span><span>        </span><span style="color:#d07711;">&quot;categ&quot;</span><span>: countries[fake.</span><span style="color:#5597d6;">pyint</span><span>(</span><span style="color:#5597d6;">max_value</span><span style="color:#72ab00;">=</span><span style="color:#b39f04;">len</span><span>(countries) </span><span style="color:#72ab00;">- </span><span style="color:#b3933a;">1</span><span>)]
+</span><span>    }
+</span><span>    </span><span style="color:#72ab00;">for </span><span>i </span><span style="color:#72ab00;">in </span><span style="color:#b39f04;">range</span><span>(</span><span style="color:#b3933a;">100</span><span>)
+</span><span>]
+</span><span>
+</span><span>
+</span><span>df </span><span style="color:#72ab00;">= </span><span>pandas.</span><span style="color:#5597d6;">DataFrame</span><span>(data)
+</span><span>
+</span><span>df[</span><span style="color:#d07711;">&quot;date&quot;</span><span>] </span><span style="color:#72ab00;">= </span><span>pandas.</span><span style="color:#5597d6;">to_datetime</span><span>(df[</span><span style="color:#d07711;">&quot;date&quot;</span><span>])
+</span><span>df[</span><span style="color:#d07711;">&quot;id&quot;</span><span>] </span><span style="color:#72ab00;">= </span><span>df[</span><span style="color:#d07711;">&quot;id&quot;</span><span>].</span><span style="color:#5597d6;">astype</span><span>(numpy.int32)
+</span><span>df[</span><span style="color:#d07711;">&quot;a&quot;</span><span>] </span><span style="color:#72ab00;">= </span><span>df[</span><span style="color:#d07711;">&quot;a&quot;</span><span>].</span><span style="color:#5597d6;">astype</span><span>(numpy.int32)
+</span><span>df[</span><span style="color:#d07711;">&quot;b&quot;</span><span>] </span><span style="color:#72ab00;">= </span><span>df[</span><span style="color:#d07711;">&quot;b&quot;</span><span>].</span><span style="color:#5597d6;">astype</span><span>(numpy.int32)
+</span><span>
+</span><span>
+</span><span style="color:#72ab00;">def </span><span style="color:#c23f31;">export</span><span>(</span><span style="color:#5597d6;">df</span><span>, </span><span style="color:#5597d6;">to</span><span>):
+</span><span>    table </span><span style="color:#72ab00;">= </span><span>pyarrow.Table.</span><span style="color:#5597d6;">from_pandas</span><span>(df)
+</span><span>    </span><span style="color:#72ab00;">with </span><span>pyarrow.</span><span style="color:#5597d6;">OSFile</span><span>(to, </span><span style="color:#d07711;">&#39;wb&#39;</span><span>) </span><span style="color:#72ab00;">as </span><span>sink:
+</span><span>        </span><span style="color:#72ab00;">with </span><span>pyarrow.ipc.</span><span style="color:#5597d6;">new_stream</span><span>(sink, table.schema) </span><span style="color:#72ab00;">as </span><span>writer:
+</span><span>            </span><span style="color:#72ab00;">for </span><span>batch </span><span style="color:#72ab00;">in </span><span>table.</span><span style="color:#5597d6;">to_batches</span><span>():
+</span><span>                writer.</span><span style="color:#5597d6;">write_batch</span><span>(batch)
+</span><span>
+</span><span style="color:#5597d6;">export</span><span>(df, </span><span style="color:#d07711;">&#39;./vite-project/public/raw.arrow&#39;</span><span>)
+</span></code></pre>
+<p>Note:</p>
+<ol>
+<li>I cast the types after the dataframe creation to secure a correct translation on the Js side afteward.</li>
+<li>The export tasks is straightforward thanks to the clean integration of pyarrow / pandas</li>
+</ol>
+<p>It's easy to imagine that this process is started by airflow after refreshing data in your Snowflake instance for instance.</p>
+<h2 id="access-data-in-front-end">Access data in Front end</h2>
+<p>The previous task assume that you created a vite application with react.
+Check https://vitejs.dev/guide/ to do the same.</p>
+<p>In the vite project you usually have public folder for static assets like images, fonts. Let's add the arrow files generated there. In production it means that we publish the IPC to the CDN, the Nginx or whatever you're using to expose static files.</p>
+<p>The code to load the IPC file is straightforward.</p>
+<pre data-lang="shell" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-shell "><code class="language-shell" data-lang="shell"><span>npm i apache-arrow
+</span></code></pre>
+<p>To access data I created this simple hook</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#72ab00;">import </span><span>{ </span><span style="color:#5597d6;">tableFromIPC </span><span>} </span><span style="color:#72ab00;">from </span><span style="color:#d07711;">&quot;apache-arrow&quot;</span><span>;
+</span><span>
+</span><span style="color:#668f14;">function</span><span style="color:#72ab00;">* </span><span style="color:#c23f31;">iterrows</span><span>(</span><span style="color:#5597d6;">table</span><span>) {
+</span><span>  </span><span style="color:#668f14;">let </span><span style="color:#5597d6;">currentIndex </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">0</span><span>;
+</span><span>  </span><span style="color:#72ab00;">for </span><span>(</span><span style="color:#5597d6;">currentIndex </span><span style="color:#72ab00;">= </span><span style="color:#b3933a;">0</span><span>; </span><span style="color:#5597d6;">currentIndex </span><span style="color:#72ab00;">&lt; </span><span style="color:#5597d6;">table</span><span>.</span><span style="color:#5597d6;">numRows</span><span>; </span><span style="color:#5597d6;">currentIndex</span><span style="color:#72ab00;">++</span><span>) {
+</span><span>    </span><span style="color:#668f14;">let </span><span style="color:#5597d6;">row </span><span style="color:#72ab00;">= </span><span>{};
+</span><span>    </span><span style="color:#5597d6;">table</span><span>.</span><span style="color:#5597d6;">schema</span><span>.</span><span style="color:#5597d6;">fields</span><span>.</span><span style="color:#b39f04;">forEach</span><span>((</span><span style="color:#5597d6;">field</span><span>) </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>      </span><span style="color:#5597d6;">row</span><span>[</span><span style="color:#5597d6;">field</span><span>.</span><span style="color:#a2a001;">name</span><span>] </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">table</span><span>.</span><span style="color:#c23f31;">getChild</span><span>(</span><span style="color:#5597d6;">field</span><span>.</span><span style="color:#a2a001;">name</span><span>).</span><span style="color:#b39f04;">get</span><span>(</span><span style="color:#5597d6;">currentIndex</span><span>);
+</span><span>    });
+</span><span>
+</span><span>    </span><span style="color:#72ab00;">yield </span><span style="color:#5597d6;">row</span><span>;
+</span><span>  }
+</span><span>}
+</span><span>
+</span><span style="color:#668f14;">function </span><span style="color:#c23f31;">useData</span><span>(</span><span style="color:#5597d6;">target</span><span>) {
+</span><span>  </span><span style="color:#668f14;">const </span><span>[</span><span style="color:#5597d6;">table</span><span>, </span><span style="color:#5597d6;">setTable</span><span>] </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">useState</span><span>(</span><span style="color:#b3933a;">null</span><span>);
+</span><span>  </span><span style="color:#668f14;">const </span><span>[</span><span style="color:#5597d6;">fields</span><span>, </span><span style="color:#5597d6;">setFields</span><span>] </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">useState</span><span>(</span><span style="color:#b3933a;">null</span><span>);
+</span><span>
+</span><span>  </span><span style="color:#c23f31;">useEffect</span><span>(() </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>    </span><span style="color:#c23f31;">tableFromIPC</span><span>(</span><span style="color:#c23f31;">fetch</span><span>(</span><span style="color:#5597d6;">target</span><span>))
+</span><span>      .</span><span style="color:#b39f04;">then</span><span>((</span><span style="color:#5597d6;">table</span><span>) </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>        </span><span style="color:#c23f31;">setFields</span><span>(</span><span style="color:#5597d6;">table</span><span>.</span><span style="color:#5597d6;">schema</span><span>.</span><span style="color:#5597d6;">fields</span><span>);
+</span><span>        </span><span style="color:#c23f31;">setTable</span><span>(</span><span style="color:#a2a001;">Array</span><span>.</span><span style="color:#c23f31;">from</span><span>(</span><span style="color:#c23f31;">iterrows</span><span>(</span><span style="color:#5597d6;">table</span><span>)));
+</span><span>      })
+</span><span>      .</span><span style="color:#b39f04;">catch</span><span>(</span><span style="color:#a2a001;">console</span><span>.</span><span style="color:#b39f04;">error</span><span>);
+</span><span>  }, []);
+</span><span>
+</span><span>  </span><span style="color:#72ab00;">return </span><span>{
+</span><span>    </span><span style="color:#5597d6;">table</span><span>,
+</span><span>    fields: </span><span style="color:#5597d6;">fields</span><span>?.</span><span style="color:#c23f31;">map</span><span>((</span><span style="color:#5597d6;">field</span><span>) </span><span style="color:#668f14;">=&gt; </span><span style="color:#5597d6;">field</span><span>.</span><span style="color:#a2a001;">name</span><span>),
+</span><span>  };
+</span><span>}
+</span></code></pre>
+<p>This hook load the data from the <code>target</code> IPC file and create a arrow table.
+To simplify reuse of the data I choose to iterate over values to create an array of object that contains each &quot;rows&quot; of data.</p>
+<p>To use this code you can call useData in your component like this:</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#72ab00;">export default </span><span style="color:#668f14;">function </span><span style="color:#c23f31;">App</span><span>() {
+</span><span>  </span><span style="color:#668f14;">const </span><span>{ </span><span style="color:#5597d6;">table</span><span>, </span><span style="color:#5597d6;">fields </span><span>} </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">useData</span><span>(</span><span style="color:#d07711;">&quot;raw.arrow&quot;</span><span>);
+</span><span>
+</span><span>  </span><span style="color:#72ab00;">if </span><span>(</span><span style="color:#72ab00;">!</span><span style="color:#5597d6;">table </span><span style="color:#72ab00;">|| !</span><span style="color:#5597d6;">fields</span><span>) {
+</span><span>    </span><span style="color:#72ab00;">return </span><span>&lt;</span><span style="color:#c23f31;">div</span><span>&gt;</span><span style="color:#5597d6;">Loading</span><span>..</span><span style="color:#72ab00;">&lt;/</span><span style="color:#5597d6;">div</span><span style="color:#72ab00;">&gt;</span><span>;
+</span><span>  }
+</span><span>
+</span><span>  </span><span style="color:#a2a001;">console</span><span>.</span><span style="color:#b39f04;">log</span><span>(</span><span style="color:#5597d6;">fields</span><span>);
+</span><span>  </span><span style="color:#a2a001;">console</span><span>.</span><span style="color:#b39f04;">table</span><span>(</span><span style="color:#5597d6;">table</span><span>);
+</span><span>
+</span><span>  </span><span style="color:#72ab00;">return </span><span style="color:#b3933a;">null</span><span>;
+</span><span>}
+</span></code></pre>
+<p>Let's see how to build on a dashboard for another part.</p>
+
+    </div>
+</div>
+
+    </main>
+    
+    <footer class="border-t border-gray-900/10 pt-4 sm:mt-20 lg:mt-24">
+      
+      <div class="mx-auto max-w-7xl px-6 pb-4 lg:px-8">
+      <div class="text-sm leading-5 text-gray-500">
+        <div class=""></div>
+        <div class="">
+          <small class="">
+            Copyright &copy; Amrltqt
+          </small>
+          <small class="">
+            Powered by <a href="https://www.getzola.org" target="_blank" noreferrer>Zola</a> 
+          </small>
+        </div>
+      </div>
+      </div>
+      
+    </footer>
+  
+  </body>
+</html>

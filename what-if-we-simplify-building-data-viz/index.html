@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+      
+
+      <title></title>
+
+      
+          <script src="https://cdn.tailwindcss.com?plugins=typography,aspect-ratio,line-clamp"></script>
+          <link rel="stylesheet" href="https://amrltqt.github.io/theme.css">
+      
+      
+  </head>
+  <body>
+  
+    <header>
+      <nav class="bg-white shadow">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-16 justify-between">
+            <div class="flex">
+              <div class="flex flex-shrink-0 items-center">
+                <a href="https:&#x2F;&#x2F;amrltqt.github.io" title="AMRLQT blog" class="text-xl font-medium">AMRLQT </a>
+              </div>
+            </div>
+            <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                <a itemprop="url" href="https://github.com/amrltqt">
+                  <img id="avatar" src="https://amrltqt.github.io/avatar.jpg" title="https://github.com/amrltqt" />
+                </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    
+    <main class="container mx-auto">
+      
+<div class="container mx-auto lg:px-40">
+    <div class="flex items-center justify-between gap-x-6 py-3 border-b border-red-900">
+        <div class="min-w-0">
+            <h1 class="text-2xl font-semibold leading-7 text-red-900 pb-1">What if we simplify Data Viz with React</h1>
+        </div>
+        <div class="flex flex-none items-center gap-x-4">
+            <p class="text-sm text-slate-500">2023-04-15</p>
+        </div>
+    </div>
+    <div id='content' class="mt-4">
+        <p>Since I'm working in data analytics industry i'm impressed by the ability of few tools to completely capture the data vizualisation market. PowerBI, Qlik, Tableau and few other old tools are completely eating the cake.</p>
+<p>As a software eng, those tools are interesting to explore data but honnestly when it comes to have something reliable in production it's always a pain in the ass. There are no configuration as code available, no real deployment automations and testing good behavior of those application means that you have to do it manually, inspecting each sheets one by one.</p>
+<p>Development could be fun, sometimes, but definitely, when it comes to deployement you have to call McGiver.</p>
+<p>An idea pop in my mind about that. What if we try to build dashboard with the classical web dev stack? Honnestly, that's not so crazy.</p>
+<p>Let's imagine that we build a dashboard with the react / tailwindcss / vitejs stack.</p>
+<p>There are few cons:</p>
+<ol>
+<li>
+<p>We need to find a way to expose data. There are no way that a web app load data in PG, Snowflake, your TS database or whatever classical database system. Technically, it's seems hard but your sec team will definitely never accept that.</p>
+</li>
+<li>
+<p>A lot of data viz tool propose ways to transform a bit the data. Like grouping by categories, filtering or filling hole in a time series. Those things are not necessarily easy and higly depends on the data exposed.</p>
+</li>
+</ol>
+<p>But to me there are a loot of pro</p>
+<ol>
+<li>
+<p>It's a code based application, you build it with current standard and deploy it with classical tools. You immediatly gain correct versionning, clean configuration, CI/CD ..</p>
+</li>
+<li>
+<p>You immediatly win the user experience of a web developper. Put to the trash the clicky, clicky configuration and leverage the precision of any css framework of the market.</p>
+</li>
+<li>
+<p>You can leverage all the existing data viz libraries that exists.</p>
+</li>
+<li>
+<p>You can customize your app without going through a marketplace or a procurement process with your vendor.</p>
+</li>
+</ol>
+<p>For data exposition and manipulation I'm thinking of using apache-arrow to share and unpack data on the web application.</p>
+<ul>
+<li>Generation of the arrow ipc could be delegated to any pandas/python application.</li>
+<li>The arrow ipc dump could be exposed through any blob storage</li>
+<li>I need to think about the way we transform data on front side using apache arrow.</li>
+</ul>
+<p>I'll post the progress</p>
+
+    </div>
+</div>
+
+    </main>
+    
+    <footer class="border-t border-gray-900/10 pt-4 sm:mt-20 lg:mt-24">
+      
+      <div class="mx-auto max-w-7xl px-6 pb-4 lg:px-8">
+      <div class="text-sm leading-5 text-gray-500">
+        <div class=""></div>
+        <div class="">
+          <small class="">
+            Copyright &copy; Amrltqt
+          </small>
+          <small class="">
+            Powered by <a href="https://www.getzola.org" target="_blank" noreferrer>Zola</a> 
+          </small>
+        </div>
+      </div>
+      </div>
+      
+    </footer>
+  
+  </body>
+</html>

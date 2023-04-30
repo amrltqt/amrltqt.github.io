@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+      
+
+      <title></title>
+
+      
+          <script src="https://cdn.tailwindcss.com?plugins=typography,aspect-ratio,line-clamp"></script>
+          <link rel="stylesheet" href="https://amrltqt.github.io/theme.css">
+      
+      
+  </head>
+  <body>
+  
+    <header>
+      <nav class="bg-white shadow">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-16 justify-between">
+            <div class="flex">
+              <div class="flex flex-shrink-0 items-center">
+                <a href="https:&#x2F;&#x2F;amrltqt.github.io" title="AMRLQT blog" class="text-xl font-medium">AMRLQT </a>
+              </div>
+            </div>
+            <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                <a itemprop="url" href="https://github.com/amrltqt">
+                  <img id="avatar" src="https://amrltqt.github.io/avatar.jpg" title="https://github.com/amrltqt" />
+                </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    
+    <main class="container mx-auto">
+      
+<div class="container mx-auto lg:px-40">
+    <div class="flex items-center justify-between gap-x-6 py-3 border-b border-red-900">
+        <div class="min-w-0">
+            <h1 class="text-2xl font-semibold leading-7 text-red-900 pb-1">Analytics on the web stack - Part 3</h1>
+        </div>
+        <div class="flex flex-none items-center gap-x-4">
+            <p class="text-sm text-slate-500">2023-04-20</p>
+        </div>
+    </div>
+    <div id='content' class="mt-4">
+        <p>Let's continue to have fun with analytics on the web stack. Today I want to discuss the dynamic filtering that we can build to serve dashboard users.</p>
+<p>First question is, why do we want dynamic filtering?</p>
+<p>Certainly not only for the aesthetic and the sentiment of power it brings. It's more to have focus and comparison capabilities for users and for the dashboard builder to avoid higher development complexity to prepare the data.</p>
+<p>Dynamic filtering help to focus on specific dimension of the provided information. Like specific country performance, specific user segments or a subset of the device fleet analyzed.
+It will help to display two country at a time, to check which one is the higher etc. As builder, you will not prepare several files or dataset for each combinations possible, you will let the dynamic filtering do the job. Again the story of the last miles of data analytics.</p>
+<p>How to implement it with react?</p>
+<p>Honnestly, it you keep it simple it's straightforward.</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#72ab00;">export default </span><span style="color:#668f14;">function </span><span style="color:#c23f31;">App</span><span>() {
+</span><span>  </span><span style="color:#668f14;">const </span><span>{ </span><span style="color:#5597d6;">table</span><span>, </span><span style="color:#5597d6;">allCountries </span><span>} </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">useData</span><span>();
+</span><span>  </span><span style="color:#668f14;">const </span><span>[</span><span style="color:#5597d6;">country</span><span>, </span><span style="color:#5597d6;">setCountry</span><span>] </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">useState</span><span>();
+</span><span>
+</span><span>  </span><span style="color:#668f14;">const </span><span style="color:#5597d6;">filteredData </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">table</span><span>.</span><span style="color:#c23f31;">filter</span><span>((</span><span style="color:#5597d6;">row</span><span>) </span><span style="color:#668f14;">=&gt;
+</span><span>    </span><span style="color:#72ab00;">!</span><span style="color:#5597d6;">country </span><span style="color:#72ab00;">|| </span><span>(
+</span><span>      </span><span style="color:#5597d6;">country </span><span style="color:#72ab00;">&amp;&amp; </span><span style="color:#5597d6;">row</span><span>.</span><span style="color:#5597d6;">country</span><span>.</span><span style="color:#b39f04;">toLowerCase</span><span>().</span><span style="color:#c23f31;">includes</span><span>(</span><span style="color:#5597d6;">country</span><span>.</span><span style="color:#b39f04;">toLowerCase</span><span>())
+</span><span>    )
+</span><span>  );
+</span><span>
+</span><span>  </span><span style="color:#72ab00;">return </span><span>(
+</span><span>    &lt;</span><span style="color:#c23f31;">div</span><span>&gt;
+</span><span>      </span><span style="color:#72ab00;">&lt;</span><span style="color:#5597d6;">ComboboxWidget
+</span><span>        </span><span style="color:#5597d6;">values</span><span style="color:#72ab00;">=</span><span>{</span><span style="color:#5597d6;">allCountries</span><span>}
+</span><span>        </span><span style="color:#5597d6;">selected</span><span style="color:#72ab00;">=</span><span>{</span><span style="color:#5597d6;">country</span><span>}
+</span><span>        </span><span style="color:#5597d6;">setSelected</span><span style="color:#72ab00;">=</span><span>{</span><span style="color:#5597d6;">setCountry</span><span>}
+</span><span>      </span><span style="color:#72ab00;">/&gt;
+</span><span>      </span><span style="color:#72ab00;">&lt;</span><span style="color:#5597d6;">Table values</span><span style="color:#72ab00;">=</span><span>{</span><span style="color:#5597d6;">filteredData</span><span>}</span><span style="color:#72ab00;">&gt;
+</span><span>    </span><span style="color:#72ab00;">&lt;/</span><span style="color:#5597d6;">div</span><span style="color:#72ab00;">&gt;
+</span><span>  );
+</span><span>}
+</span></code></pre>
+<p>The main idea is to keep raw data and all the constraints in single place.
+Everytime a constraint (like a filter) is updated by the user, the filtering logic is applied on the raw data. A new projection is computed and send to components to be refreshed.</p>
+<p>It's honnestly much more simpler than what we have in classical react application.</p>
+<p>The process could be summarized like this:</p>
+<ol>
+<li>Load all the necessary raw data</li>
+<li>Generate the filter values and their default value</li>
+<li>Hydrate each component with the filtered data</li>
+</ol>
+<p>Secure that every modifier of the filters are well connected with each interaction and let the flow of the rerendering do the job. With modern computer, except if you manipulate half a GB of data you shouldn't suffer a lot from transformation, recomputation and rerendering performance.</p>
+
+    </div>
+</div>
+
+    </main>
+    
+    <footer class="border-t border-gray-900/10 pt-4 sm:mt-20 lg:mt-24">
+      
+      <div class="mx-auto max-w-7xl px-6 pb-4 lg:px-8">
+      <div class="text-sm leading-5 text-gray-500">
+        <div class=""></div>
+        <div class="">
+          <small class="">
+            Copyright &copy; Amrltqt
+          </small>
+          <small class="">
+            Powered by <a href="https://www.getzola.org" target="_blank" noreferrer>Zola</a> 
+          </small>
+        </div>
+      </div>
+      </div>
+      
+    </footer>
+  
+  </body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+      
+
+      <title></title>
+
+      
+          <script src="https://cdn.tailwindcss.com?plugins=typography,aspect-ratio,line-clamp"></script>
+          <link rel="stylesheet" href="https://amrltqt.github.io/theme.css">
+      
+      
+  </head>
+  <body>
+  
+    <header>
+      <nav class="bg-white shadow">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-16 justify-between">
+            <div class="flex">
+              <div class="flex flex-shrink-0 items-center">
+                <a href="https:&#x2F;&#x2F;amrltqt.github.io" title="AMRLQT blog" class="text-xl font-medium">AMRLQT </a>
+              </div>
+            </div>
+            <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                <a itemprop="url" href="https://github.com/amrltqt">
+                  <img id="avatar" src="https://amrltqt.github.io/avatar.jpg" title="https://github.com/amrltqt" />
+                </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    
+    <main class="container mx-auto">
+      
+<div class="container mx-auto lg:px-40">
+    <div class="flex items-center justify-between gap-x-6 py-3 border-b border-red-900">
+        <div class="min-w-0">
+            <h1 class="text-2xl font-semibold leading-7 text-red-900 pb-1">Error converter in rust</h1>
+        </div>
+        <div class="flex flex-none items-center gap-x-4">
+            <p class="text-sm text-slate-500">2022-11-13</p>
+        </div>
+    </div>
+    <div id='content' class="mt-4">
+        <p>Do you remember three tier architecture? Between logic tier and data tiers in your application server code, you'll always find a bunch of code related to error management about databases issues. Most of the time you want to map the database issue with something that you can manage on your side.</p>
+<p>Let's say that I want to deal with the following errors.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">enum </span><span style="color:#c23f31;">MyError </span><span>{
+</span><span>    SomethingWeirdHappen(</span><span style="color:#a2a001;">String</span><span>),
+</span><span>    IKnowWellThisError(</span><span style="color:#a2a001;">String</span><span>)
+</span><span>}
+</span></code></pre>
+<p>But several libs that I use are providing something like a <code>DatabaseError</code> or just their own <code>Error</code> enum.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">fn </span><span style="color:#c23f31;">db_exec</span><span>(</span><span style="color:#5597d6;">statement</span><span>: </span><span style="color:#72ab00;">&amp;</span><span style="color:#668f14;">str</span><span>) -&gt; </span><span style="color:#a2a001;">Result</span><span>&lt;(), DatabaseError&gt; {
+</span><span>    </span><span style="color:#72ab00;">...
+</span><span>}
+</span><span>
+</span><span style="color:#668f14;">fn </span><span style="color:#c23f31;">send_message_mq</span><span>() -&gt; </span><span style="color:#a2a001;">Result</span><span>&lt;(), mq::Error&gt; {
+</span><span>    </span><span style="color:#72ab00;">...
+</span><span>}
+</span><span>
+</span><span style="color:#668f14;">fn </span><span style="color:#c23f31;">main</span><span>() -&gt; </span><span style="color:#a2a001;">Result</span><span>&lt;(), MyError&gt; {
+</span><span>
+</span><span>    </span><span style="color:#72ab00;">match </span><span style="color:#b39f04;">db_exec</span><span>(</span><span style="color:#d07711;">&quot;...&quot;</span><span>) {
+</span><span>        </span><span style="color:#a2a001;">Ok</span><span>(v) </span><span style="color:#72ab00;">=&gt; </span><span>{
+</span><span>            </span><span style="color:#72ab00;">match </span><span style="color:#b39f04;">send_message_mq</span><span>() {
+</span><span>                </span><span style="color:#a2a001;">Ok</span><span>(v) </span><span style="color:#72ab00;">=&gt; </span><span>{
+</span><span>                    </span><span style="color:#72ab00;">...
+</span><span>                },
+</span><span>                </span><span style="color:#a2a001;">Err</span><span>(err) </span><span style="color:#72ab00;">=&gt; </span><span>{
+</span><span>                    </span><span style="color:#72ab00;">return </span><span style="color:#a2a001;">Err</span><span>(MyError::IKnowWellThisError(err.</span><span style="color:#b39f04;">to_string</span><span>()))
+</span><span>                }
+</span><span>            }
+</span><span>        },
+</span><span>        </span><span style="color:#a2a001;">Err</span><span>(err) </span><span style="color:#72ab00;">=&gt; </span><span>{
+</span><span>            </span><span style="color:#72ab00;">return </span><span style="color:#a2a001;">Err</span><span>(MyError::SomethingWeirdHappen(err.</span><span style="color:#b39f04;">to_string</span><span>()))
+</span><span>        }
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#a2a001;">Ok</span><span>(())
+</span><span>}
+</span></code></pre>
+<p>To simplify a bit, I try to introduce a converter function that will handle lib error and convert it to my own.
+With this converter, it's easy to wrap fully the scope of the subsequent error you have to deal to what you manage on your side.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">fn </span><span style="color:#c23f31;">mq_error</span><span>(</span><span style="color:#5597d6;">err</span><span>: mq::Error) -&gt; MyError {
+</span><span>    </span><span style="color:#72ab00;">match</span><span> err {
+</span><span>        mq::Error::TheBasicError(err) </span><span style="color:#72ab00;">=&gt; </span><span>MyError::IKnowWellThisError(err.</span><span style="color:#b39f04;">to_string</span><span>()),
+</span><span>        </span><span style="color:#72ab00;">_ =&gt; </span><span>MyError::SomethingWeirdHappen(err.</span><span style="color:#b39f04;">to_string</span><span>())
+</span><span>    }
+</span><span>}
+</span></code></pre>
+<p>To use it, <a href="https://doc.rust-lang.org/std/result/enum.Result.html#method.map_err"><code>map_err</code></a> will be your savior. You can pass the converter directly to the function and retrieve what you need.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">let</span><span> res: </span><span style="color:#a2a001;">Result</span><span>&lt;(), MyError&gt; </span><span style="color:#72ab00;">= </span><span style="color:#b39f04;">send_message_mq</span><span>().</span><span style="color:#b39f04;">map_err</span><span>(mq_error);
+</span></code></pre>
+<p>As the error you manage is now a <code>MyError</code> you can leverage the <a href="https://doc.rust-lang.org/rust-by-example/std/result/question_mark.html"><code>?</code> shortcut</a> to simplify your code.</p>
+<pre data-lang="rust" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#668f14;">fn </span><span style="color:#c23f31;">main</span><span>() -&gt; </span><span style="color:#a2a001;">Result</span><span>&lt;(), MyError&gt; {
+</span><span>    </span><span style="color:#668f14;">let</span><span> v </span><span style="color:#72ab00;">=</span><span> db.</span><span style="color:#b39f04;">exec</span><span>(</span><span style="color:#d07711;">&quot;...&quot;</span><span>).</span><span style="color:#b39f04;">map_err</span><span>(db_error)</span><span style="color:#72ab00;">?</span><span>;
+</span><span>    </span><span style="color:#b39f04;">send_message_mq</span><span>().</span><span style="color:#b39f04;">map_err</span><span>(mq_error)</span><span style="color:#72ab00;">?</span><span>;
+</span><span>
+</span><span>    </span><span style="color:#a2a001;">Ok</span><span>(())
+</span><span>}
+</span></code></pre>
+<p>By mapping most of the error that can appear in dependencies lib, you'll have a safer design will knowing better what happen at runtime.</p>
+
+    </div>
+</div>
+
+    </main>
+    
+    <footer class="border-t border-gray-900/10 pt-4 sm:mt-20 lg:mt-24">
+      
+      <div class="mx-auto max-w-7xl px-6 pb-4 lg:px-8">
+      <div class="text-sm leading-5 text-gray-500">
+        <div class=""></div>
+        <div class="">
+          <small class="">
+            Copyright &copy; Amrltqt
+          </small>
+          <small class="">
+            Powered by <a href="https://www.getzola.org" target="_blank" noreferrer>Zola</a> 
+          </small>
+        </div>
+      </div>
+      </div>
+      
+    </footer>
+  
+  </body>
+</html>

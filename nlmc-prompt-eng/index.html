@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+      
+
+      <title></title>
+
+      
+          <script src="https://cdn.tailwindcss.com?plugins=typography,aspect-ratio,line-clamp"></script>
+          <link rel="stylesheet" href="https://amrltqt.github.io/theme.css">
+      
+      
+  </head>
+  <body>
+  
+    <header>
+      <nav class="bg-white shadow">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-16 justify-between">
+            <div class="flex">
+              <div class="flex flex-shrink-0 items-center">
+                <a href="https:&#x2F;&#x2F;amrltqt.github.io" title="AMRLQT blog" class="text-xl font-medium">AMRLQT </a>
+              </div>
+            </div>
+            <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                <a itemprop="url" href="https://github.com/amrltqt">
+                  <img id="avatar" src="https://amrltqt.github.io/avatar.jpg" title="https://github.com/amrltqt" />
+                </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    
+    <main class="container mx-auto">
+      
+<div class="container mx-auto lg:px-40">
+    <div class="flex items-center justify-between gap-x-6 py-3 border-b border-red-900">
+        <div class="min-w-0">
+            <h1 class="text-2xl font-semibold leading-7 text-red-900 pb-1">NLMC - a simple practical use case</h1>
+        </div>
+        <div class="flex flex-none items-center gap-x-4">
+            <p class="text-sm text-slate-500">2023-03-08</p>
+        </div>
+    </div>
+    <div id='content' class="mt-4">
+        <p>In this post, we'll explore how to use Large Language Models (LLMs) to build a Natural Language, Machine Control (NLMC) process, enhancing user experience in software applications. LLMs enable software to better understand human language, and when combined with effective summarization, they can help create natural language interfaces for today's APIs.</p>
+<p>For instance, consider building a search engine for products. Traditional algorithms parse user queries, extract keywords, and generate a query for the product search engine. However, language is about conveying meaning, not just keywords. LLMs can handle more natural queries, such as &quot;I want to sleep better,&quot; and generate relevant product suggestions.</p>
+<p>Let's have a try.</p>
+<pre data-lang="prompt" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-prompt "><code class="language-prompt" data-lang="prompt"><span>Imagine that you&#39;re helping people to buy products on a marketplace.
+</span><span>Propose products categories as a list for the request &quot;I want to sleep better&quot;
+</span></code></pre>
+<pre data-lang="answer" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-answer "><code class="language-answer" data-lang="answer"><span>Sure, here are some product categories that could help someone sleep better:
+</span><span>
+</span><span>Bedding: High-quality sheets, pillows, and comforters can make a huge difference in the quality of your sleep.
+</span><span>
+</span><span>Sleep aids: There are a variety of products designed to help you fall asleep and stay asleep, such as white noise machines, essential oils, sleep masks, and earplugs.
+</span><span>
+</span><span>Mattresses and mattress toppers: A good mattress or mattress topper can provide the support and comfort you need for a good night&#39;s rest.
+</span></code></pre>
+<p>It's definitely really interesting to rely on the LLM to identify what to look for (bonus, you can provide the <em>WHY</em> to your customers).</p>
+<p>In order to easily postprocess the information you can be a bit more assertive on the way you format the answer</p>
+<p>Adding the following instruction in the end of the the prompt will help to secure the output format</p>
+<pre data-lang="prompt" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-prompt "><code class="language-prompt" data-lang="prompt"><span>...
+</span><span>format the answer in JSON with category as a key and the justification as value
+</span></code></pre>
+<pre data-lang="json" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-json "><code class="language-json" data-lang="json"><span>{
+</span><span>  </span><span style="color:#d07711;">&quot;Pillows&quot;</span><span>: </span><span style="color:#d07711;">&quot;A good pillow can significantly improve the quality of your sleep by providing proper support and alignment for your head, neck, and shoulders. There are pillows available in the market that cater to specific needs, such as memory foam, cooling gel, and orthopedic pillows.&quot;</span><span>,
+</span><span>  </span><span style="color:#d07711;">&quot;Mattresses&quot;</span><span>: </span><span style="color:#d07711;">&quot;A comfortable and supportive mattress is essential for a good night&#39;s sleep. A mattress that is too hard or too soft can cause discomfort and disrupt sleep. Look for a mattress that suits your sleeping position and preferences, such as memory foam, latex, or hybrid mattresses&quot;</span><span>,
+</span><span>  </span><span style="color:#d07711;">&quot;Bedding&quot;</span><span>: </span><span style="color:#d07711;">&quot;Choosing the right bedding is important for a comfortable sleep. This includes sheets, blankets, comforters, and duvets. Look for materials that are breathable, such as cotton or linen, to keep you cool during the night.&quot;
+</span><span>}
+</span></code></pre>
+<p>You now have your categories in a format that is easy to manipulate with any modern programming language. You can reuse the keys to look for products in your search engine and complete the user request with products and a feedback from the LLM.</p>
+<p>It improve a lot the user experience while reusing your existing API code. Those are exactly the objectives of the NLMC approach.</p>
+
+    </div>
+</div>
+
+    </main>
+    
+    <footer class="border-t border-gray-900/10 pt-4 sm:mt-20 lg:mt-24">
+      
+      <div class="mx-auto max-w-7xl px-6 pb-4 lg:px-8">
+      <div class="text-sm leading-5 text-gray-500">
+        <div class=""></div>
+        <div class="">
+          <small class="">
+            Copyright &copy; Amrltqt
+          </small>
+          <small class="">
+            Powered by <a href="https://www.getzola.org" target="_blank" noreferrer>Zola</a> 
+          </small>
+        </div>
+      </div>
+      </div>
+      
+    </footer>
+  
+  </body>
+</html>

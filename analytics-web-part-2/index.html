@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+      
+
+      <title></title>
+
+      
+          <script src="https://cdn.tailwindcss.com?plugins=typography,aspect-ratio,line-clamp"></script>
+          <link rel="stylesheet" href="https://amrltqt.github.io/theme.css">
+      
+      
+  </head>
+  <body>
+  
+    <header>
+      <nav class="bg-white shadow">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-16 justify-between">
+            <div class="flex">
+              <div class="flex flex-shrink-0 items-center">
+                <a href="https:&#x2F;&#x2F;amrltqt.github.io" title="AMRLQT blog" class="text-xl font-medium">AMRLQT </a>
+              </div>
+            </div>
+            <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                <a itemprop="url" href="https://github.com/amrltqt">
+                  <img id="avatar" src="https://amrltqt.github.io/avatar.jpg" title="https://github.com/amrltqt" />
+                </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    
+    <main class="container mx-auto">
+      
+<div class="container mx-auto lg:px-40">
+    <div class="flex items-center justify-between gap-x-6 py-3 border-b border-red-900">
+        <div class="min-w-0">
+            <h1 class="text-2xl font-semibold leading-7 text-red-900 pb-1">Analytics on the web stack - Part 2</h1>
+        </div>
+        <div class="flex flex-none items-center gap-x-4">
+            <p class="text-sm text-slate-500">2023-04-18</p>
+        </div>
+    </div>
+    <div id='content' class="mt-4">
+        <p>Ok, I need to admit that building a dashboard on using simply the current web stack request a bit more development than what I though at the beginning.</p>
+<p>Nothing insurmountable, but still some difficulties.</p>
+<p>Here is a small demonstration of what you can achieve with a bit of js and react. I took me honnestly few hours to build and I'm quite happy with the result.</p>
+<p><img src="https://amrltqt.github.io/analytics-web-part-2/images/behavior.gif" alt="screenshot" /></p>
+<p>To resume in few points what I learn doing this experiment:</p>
+<ul>
+<li>React states and hooks are awesome for drilling a dataset</li>
+<li>Chartjs is a really marvellous library</li>
+<li>Few base widget are essential to be comfortable</li>
+<li>Javascript can produce transformation, but I'm unsure about the acceptable level</li>
+</ul>
+<h2 id="react-states-are-awesome-to-drill-a-dataset">React states are awesome to drill a dataset</h2>
+<p>The way react manage state is really appreciated when it comes to manipulating fields are related components. By nature, analytics dashboard are build like trees with one or few raw datasets at its root.</p>
+<p>I often call a dashboard the last mile of a data pipeline transportation.</p>
+<p>So in a way it behaves exactly like a data pipeline, as a DAG of computing units. The main difference is that computing is on the edge, on client side and that as part of the source there are the filter and parameters that the user provide.</p>
+<p>What's important is that you load the data that you need once and only once. Then compute what you want.</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#72ab00;">export default </span><span style="color:#668f14;">function </span><span style="color:#c23f31;">App</span><span>() {
+</span><span>  </span><span style="color:#668f14;">const </span><span>{ </span><span style="color:#5597d6;">table</span><span>, </span><span style="color:#5597d6;">fields </span><span>} </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">useData</span><span>(</span><span style="color:#d07711;">&quot;raw.arrow&quot;</span><span>);
+</span><span>
+</span><span>  </span><span style="color:#72ab00;">if </span><span>(</span><span style="color:#72ab00;">!</span><span style="color:#5597d6;">table </span><span style="color:#72ab00;">|| !</span><span style="color:#5597d6;">fields</span><span>) {
+</span><span>    </span><span style="color:#72ab00;">return </span><span>&lt;</span><span style="color:#c23f31;">div</span><span>&gt;</span><span style="color:#5597d6;">Loading</span><span>..</span><span style="color:#72ab00;">&lt;/</span><span style="color:#5597d6;">div</span><span style="color:#72ab00;">&gt;</span><span>;
+</span><span>  }
+</span><span>
+</span><span>  </span><span style="color:#7f8989;">/** The root of the dashboard */
+</span><span>  </span><span style="color:#72ab00;">return </span><span>&lt;</span><span style="color:#c23f31;">main</span><span>&gt;</span><span style="color:#72ab00;">...&lt;/</span><span style="color:#5597d6;">main</span><span style="color:#72ab00;">&gt;</span><span>;
+</span><span>}
+</span></code></pre>
+<p>Based on the previous article example the root of the dashboard is made of the App application. When <code>useData(&quot;raw.arrow&quot;)</code> is resolve, data is fully available and you can apply filtering, transformation or copy of the data.</p>
+<p>To have a dynamic refresh, just use react <code>useState()</code> to maintain the filters that you want to apply on your data.</p>
+<p>We'll build an entire article about that.</p>
+<p>The complete example is here in the meantime:</p>
+<pre data-lang="js" style="background-color:#f5f5f5;color:#1f1f1f;" class="language-js "><code class="language-js" data-lang="js"><span style="color:#668f14;">const </span><span>{ </span><span style="color:#5597d6;">table</span><span>: </span><span style="color:#5597d6;">raw_table</span><span>, </span><span style="color:#5597d6;">fields </span><span>} </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">useData</span><span>(</span><span style="color:#d07711;">&quot;raw.arrow&quot;</span><span>);
+</span><span>
+</span><span style="color:#668f14;">const </span><span>[</span><span style="color:#5597d6;">metrics</span><span>, </span><span style="color:#5597d6;">setMetrics</span><span>] </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">useState</span><span>([</span><span style="color:#d07711;">&quot;a&quot;</span><span>, </span><span style="color:#d07711;">&quot;b&quot;</span><span>]);
+</span><span style="color:#668f14;">const </span><span>[</span><span style="color:#5597d6;">minDate</span><span>, </span><span style="color:#5597d6;">setMinDate</span><span>] </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">useState</span><span>(</span><span style="color:#b3933a;">null</span><span>);
+</span><span style="color:#668f14;">const </span><span>[</span><span style="color:#5597d6;">maxDate</span><span>, </span><span style="color:#5597d6;">setMaxDate</span><span>] </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">useState</span><span>(</span><span style="color:#b3933a;">null</span><span>);
+</span><span>
+</span><span style="color:#72ab00;">if </span><span>(</span><span style="color:#72ab00;">!</span><span style="color:#5597d6;">raw_table </span><span style="color:#72ab00;">|| !</span><span style="color:#5597d6;">fields</span><span>) {
+</span><span>  </span><span style="color:#72ab00;">return </span><span>&lt;</span><span style="color:#c23f31;">div</span><span>&gt;</span><span style="color:#5597d6;">Loading</span><span>..</span><span style="color:#72ab00;">&lt;/</span><span style="color:#5597d6;">div</span><span style="color:#72ab00;">&gt;</span><span>;
+</span><span>}
+</span><span>
+</span><span style="color:#668f14;">let </span><span style="color:#5597d6;">table </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">raw_table</span><span>.</span><span style="color:#c23f31;">filter</span><span>((</span><span style="color:#5597d6;">row</span><span>) </span><span style="color:#668f14;">=&gt; </span><span>{
+</span><span>  </span><span style="color:#72ab00;">if </span><span>(</span><span style="color:#72ab00;">!</span><span style="color:#5597d6;">minDate </span><span style="color:#72ab00;">|| !</span><span style="color:#5597d6;">maxDate</span><span>) </span><span style="color:#72ab00;">return </span><span style="color:#b3933a;">true</span><span>;
+</span><span>  </span><span style="color:#668f14;">let </span><span style="color:#5597d6;">current </span><span style="color:#72ab00;">= </span><span style="color:#5597d6;">DateTime</span><span>.</span><span style="color:#c23f31;">fromMillis</span><span>(</span><span style="color:#5597d6;">row</span><span>.</span><span style="color:#5597d6;">date</span><span>);
+</span><span>  </span><span style="color:#72ab00;">return </span><span style="color:#5597d6;">minDate</span><span>.</span><span style="color:#5597d6;">ts </span><span style="color:#72ab00;">&lt; </span><span style="color:#5597d6;">current</span><span>.</span><span style="color:#5597d6;">ts </span><span style="color:#72ab00;">&amp;&amp; </span><span style="color:#5597d6;">current</span><span>.</span><span style="color:#5597d6;">ts </span><span style="color:#72ab00;">&lt; </span><span style="color:#5597d6;">maxDate</span><span>.</span><span style="color:#5597d6;">ts</span><span>;
+</span><span>});
+</span><span>
+</span><span style="color:#668f14;">const </span><span style="color:#5597d6;">groups </span><span style="color:#72ab00;">= </span><span style="color:#c23f31;">group_by_sum_categories</span><span>(</span><span style="color:#5597d6;">table</span><span>, </span><span style="color:#5597d6;">metrics</span><span>);
+</span></code></pre>
+<h2 id="chartjs-is-a-really-marvellous-library">Chartjs is a really marvellous library</h2>
+<p>I have no words. I just discover the lib and I'm amazed by the rendering, the speed and the level of configuration available.</p>
+<p>The react-chartjs-2 library is a really simple wrapper that do not affect the raw capabilities of the chart.js lib. There is exactly what I need in term of charts and I'm just starting discovering the capabilities.</p>
+<p>100% sure that I'm going to spend much more time on it in the coming weeks.</p>
+<h2 id="few-base-widget-are-essential-to-be-comfortable">Few base widget are essential to be comfortable</h2>
+<p>Rebuilding widgets, especially with chart.js is really comfortable. I don't think that it's worth rebuilding a wrapper on top of it. Even for less technicall people, it will just affect badly their own experience with the lib.</p>
+<p>However, few widgets would be higly appreciated out of the box.</p>
+<ul>
+<li>filtering</li>
+<li>layouts</li>
+<li>transformation utilities</li>
+</ul>
+<p>Filtering is the main difficulty honnestly, especially dates. I'm not sure how to deal with that now. I'm inspired by existing dashboard capabilities but I'm missing a bit of experience building it.</p>
+<p>Layouts with flex, grid are not necessarily easy and could be cumbersome. Tailwindcss help me a lot to simplify that but to win a bit of speed while developping I would love to have a very directed layout component. Like the one provided by android application for example, but in react.</p>
+<p>Transformations are simple in JS, but honnestly, rebuilding a group by everytime you need it is an error prone process. I'm thinking about using lodash to do those kind of thing.
+Let's see where it goes.</p>
+<h2 id="javascript-can-produce-transformation-but-i-m-unsure-about-the-acceptable-level">Javascript can produce transformation, but I'm unsure about the acceptable level</h2>
+<p>I'm not sure that I can accept to have group by in JS. Honnestly it's a purist question, but if you have the opportunity to precompute things and just feed your dashboard with the pre-computed data why don't do it?</p>
+<p>I think there is a balance to find.</p>
+<p>Most of modern web client are absolutely powerful compared to the past 5 / 10 years and we have to consider that. We can offload some computing on the edge, at the last moment, only when needed. But at the same time a simple group by could be reprocessed several thousands of time on the client side just by re-rendering.</p>
+<p>On the other side, leaving all the work on your server when the dashboard is not really used is a waste of ressources. Usually you think about autoscaling, distribution, having the good infrastructure to handle the load and it could be totally useless.</p>
+<p>I don't have a clear answer for the &quot;what's the right balance&quot; question except that we have to start measuring the usage to find the good compromise.</p>
+<p>See you in the next part.</p>
+
+    </div>
+</div>
+
+    </main>
+    
+    <footer class="border-t border-gray-900/10 pt-4 sm:mt-20 lg:mt-24">
+      
+      <div class="mx-auto max-w-7xl px-6 pb-4 lg:px-8">
+      <div class="text-sm leading-5 text-gray-500">
+        <div class=""></div>
+        <div class="">
+          <small class="">
+            Copyright &copy; Amrltqt
+          </small>
+          <small class="">
+            Powered by <a href="https://www.getzola.org" target="_blank" noreferrer>Zola</a> 
+          </small>
+        </div>
+      </div>
+      </div>
+      
+    </footer>
+  
+  </body>
+</html>
