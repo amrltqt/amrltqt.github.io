@@ -187,7 +187,7 @@ import pandas
 from analytics.utils import dataset
 
 
-@dataset(name="max_sales_per_customers", depends=["sales"])
+@dataset(name="customer_sales", depends=["sales"])
 def customer_sales(sales: pandas.DataFrame):
     customer_sales = (
         sales[["customer_name", "total_amount"]]
